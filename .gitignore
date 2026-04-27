@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.env
+.venv
+
+# Editor
+.vscode/
+.idea/
+
+*/__pycache__/
+*.py[cod]
+*.log
+
+/git_repos/*
+
+services-manifest.yml
+.devcontainer/*
+
+test_*.py
+tests_*.py

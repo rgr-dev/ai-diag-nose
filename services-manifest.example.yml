@@ -1,0 +1,36 @@
+services:
+  - name: service-a
+    repository: git@bitbucket.org:your-company/service-a.git
+    service_endpoint: https://service-a.your-company.com
+    description_file: AGENTS.md
+    logs_query: '{service="service-a"} |= `ERROR` or `Caused by`' ## For java/springboot apps
+    reference_services:
+      - service-c
+  - name: service-b
+    repository: git@bitbucket.org:your-company/service-b.git
+    service_endpoint: https://service-b.your-company.com
+    description_file: AGENTS.md
+    logs_query: '{service="service-b"} |= `ERROR` or `Caused by`' ## For java/springboot apps
+    service_dependencies:
+      - redis-cache
+      - postgres-db
+    reference_services:
+      - service-c
+  - name: service-c
+    repository: https://RMoreno@bitbucket.org/your-company/service-c.git
+    service_endpoint: https://service-c.your-company.com
+    description_file: AGENTS.md
+    logs_query: '{service="service-c"} |= `ERROR` or `Caused by`' ## For java/springboot apps
+    service_dependencies:
+      - postgres-db
+
+dependencies:
+  - name: redis-cache
+    type: database
+    vendor: redis
+  - name: postgres-db
+    type: database
+    vendor: postgres
+  - name: dynamodb
+    type: database
+    vendor: aws-dynamodb

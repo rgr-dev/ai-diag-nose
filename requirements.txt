@@ -1,0 +1,9 @@
+langchain
+langgraph
+langchain-ollama
+langchain-openai
+boto3
+python-telegram-bot
+python-dotenv
+psycopg2
+langgraph-checkpoint-postgres
