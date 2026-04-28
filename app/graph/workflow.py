@@ -6,7 +6,7 @@ from app.agents.llm_factory import LLMsFactory
 from app.agents.prompts import REMEDIATION_AGENT_SYSTEM_PROMPT
 from app.domain.state import State
 from app.graph.middlewares import log_response, select_tools, add_context
-from app.nodes.agents_catalog import *
+from app.nodes.llms_catalog import *
 from app.nodes.edges_catalog import *
 from app.nodes.hitl_interruptors import *
 from app.nodes.task_nodes_catalog import *
@@ -34,6 +34,7 @@ def build_workflow(checkpointer=None, store=None, generate_graph: bool = False) 
     # nodes (injecting deps)
     query_logs_task = query_logs_node(query_logs)
     send_diagnosis_message_task = send_diagnosis_message(send_confirmation_message)
+    send_message_task = send_simple_message(send_message)
     diagnosis_llm = diagnosis_node(openai_llm)
     diagnosis_check_llm = diagnosis_check_node(openai_llm)
     remediation_llm = remediation_node(openai_llm)
@@ -56,7 +57,8 @@ def build_workflow(checkpointer=None, store=None, generate_graph: bool = False) 
     workflow.add_node('remediation_llm', remediation_llm)
     workflow.add_node('human_advice_processor_llm', human_advice_processor_llm)
     workflow.add_node('send_diagnosis_message_task', send_diagnosis_message_task)
-    workflow.add_node('remediation_executor_agent', remediation_executor_agent)
+    workflow.add_node('send_message_task', send_message_task)
+    workflow.add_node('remediation_executor_agent', remediation_agent_executor_n)
     workflow.add_node('approval_hitl', human_approval_node)
     workflow.add_node('get_advice_hitl', human_advice_node)
     workflow.add_node('dummy_node_a', dummy_node_a)
@@ -81,8 +83,9 @@ def build_workflow(checkpointer=None, store=None, generate_graph: bool = False) 
         Constants.HUMAN_APPROVE: 'remediation_executor_agent', Constants.HUMAN_REJECT: 'dummy_node_b', Constants.HUMAN_ADVICE: 'get_advice_hitl' })
     workflow.add_edge('get_advice_hitl', 'human_advice_processor_llm')
     workflow.add_conditional_edges('human_advice_processor_llm', check_human_advice_router, 
-                                   {Constants.HUMAN_APPROVE: 'dummy_node_a', Constants.HUMAN_REJECT: 'dummy_node_b'})
-    workflow.add_edge('remediation_executor_agent', 'dummy_node_c')
+                                   {Constants.HUMAN_APPROVE: 'remediation_executor_agent', Constants.HUMAN_REJECT: 'dummy_node_b'})
+    workflow.add_edge('remediation_executor_agent', 'send_message_task')
+    workflow.add_edge('send_message_task', 'dummy_node_c')
     workflow.add_edge('dummy_node_a', END)
     workflow.add_edge('dummy_node_b', END)
     workflow.add_edge('dummy_node_c', END)

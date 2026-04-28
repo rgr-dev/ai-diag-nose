@@ -99,3 +99,18 @@ def send_diagnosis_message(message_fn):
             logger.error("Failed to send diagnosis message to any target.")
             return Command(update={'error_message': 'Failed to send diagnosis message to any target.'})
     return node
+
+def send_simple_message(message_fn):
+    def node(state: State) -> Command:
+        '''
+        Tool node to send a simple message to a communication channel (e.g., Telegram) using the provided message sending function.
+        '''
+        logger.info("Sending message to communication channel...")
+        results = asyncio.run(message_fn(state.final_message))
+        if results and any(results.values()):
+            logger.info("Message sent successfully to at least one target.")
+            return Command(update={'info_message': 'Message sent successfully to at least one target.'})
+        else:
+            logger.error("Failed to send message to any target.")
+            return Command(update={'error_message': 'Failed to send message to any target.'})
+    return node

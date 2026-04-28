@@ -27,7 +27,11 @@ async def select_tools(
     handler: Callable[[ModelRequest], ModelResponse],
 ) -> ModelResponse:
     """Middleware to select relevant tools based on state/context."""
-    relevant_tools = load_tools(_get_tools_list_from_state(request.state))
+    advice_tools = []
+    state_tools = load_tools(_get_tools_list_from_state(request.state))
+    if request.state["human_advice_curated"]:
+        advice_tools = load_tools(request.state["human_advice_curated"].tools)
+    relevant_tools = [*state_tools, *advice_tools] 
     return await handler(request.override(tools=relevant_tools))
 
 
@@ -38,11 +42,13 @@ async def add_context(
 ) -> ModelResponse:
     tools = _get_tools_list_from_state(request.state)
     tools_to_use = f"{', '.join(tools)}"
+    user_advice = request.state["human_advice_curated"].suggestions
     prompt_complement = get_bound_message(REMEDIATION_AGENT_ACTION_PROMPT, 
                                           {'context': get_prompt_subfix_lite(request.state), 
                                            'remediation_suggestion': request.state['remediation_steps_suggestion'],
                                            'service_on_analysis_secrets': request.state['secrets_info'].service_on_analysis_secrets,
-                                           'reference_service_secrets': request.state['secrets_info'].reference_service_secrets})
+                                           'reference_service_secrets': request.state['secrets_info'].reference_service_secrets,
+                                           'human_chat_advice': user_advice})
     logger.debug(f"Adding context to system prompt. Tools: {tools_to_use}. Prompt complement: {prompt_complement}")
     new_content = list(request.system_message.content_blocks) + [
         {"type": "text", "text": f"you have access to the following tools: ."},

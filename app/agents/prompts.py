@@ -39,8 +39,9 @@ SERVICE_INFO_PREFIX_PROMPT = """
     """
 
 REMEDIATION_AGENT_SYSTEM_PROMPT = [
-    "You are the DevOps engineer responsible for diagnosing and resolving issues in a software service. "
-    "Based on the provided context generated from a diagnosis & remediation flow, your task is to execute the remediation steps to resolve the issue."
+    "You are the DevOps engineer responsible for diagnosing and resolving issues in a software service. ",
+    "Based on the provided context generated from a diagnosis & remediation flow, your task is to execute the remediation steps to resolve the issue.",
+    "There could be a user advice that you should also consider when executing the remediation steps, pay attention to it and use it as an additional input if provided (and if applicable)."
     ]
 
 REMEDIATION_AGENT_ACTION_PROMPT = """
@@ -55,6 +56,9 @@ REMEDIATION_AGENT_ACTION_PROMPT = """
     <previous_suggestion>
     ${remediation_suggestion}
     </previous_suggestion>
+    
+    ### User advice (if any, consider it as well):
+    ${human_chat_advice}
 
     ---
     ### Guidelines:

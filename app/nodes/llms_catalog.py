@@ -222,8 +222,8 @@ def human_advice_processor_node(llm):
         1. Suggest tools to use
         2. Provide general guidance or instructions in natural language
 
-        Available tools (ONLY these are allowed):
-        {state.skills_suggestion}
+        Available tools (ONLY these are allowed to be adviced, do NOT suggest any tool not in this list):
+        {state.skills_catalog}
 
         Instructions:
         - Do NOT invent tools
@@ -256,9 +256,10 @@ def human_advice_processor_node(llm):
             "confidence": 0.0-1.0
         }}
 
-        User message:
+        The User message to be analyzed is:
         {state.human_chat_advice}
         
+        > Remember to add the user message to the suggestions field in the output if the decision is Proceed, this will be used as an additional input for the remediation agent.
         """)
 
         msg = llm.invoke(prompt)
@@ -271,10 +272,11 @@ def human_advice_processor_node(llm):
     return node
 
 def remediation_agent_executor_node(agent):
-    def node(state: State) -> Command:
+    async def node(state: State) -> Command:
         ''' Agent node to execute the remediation steps provided by the remediation node.
         This node will take the remediation steps suggested by the remediation_node and execute them using the appropriate skills or tools, aiming to resolve the identified issues based on the diagnosis and analysis results.
         '''
-        result = agent.invoke(state)
-        return Command(update=result)
+        result = await agent.ainvoke(state)
+        last_message = result["messages"][-1]
+        return Command(update={'final_message': last_message.content})
     return node

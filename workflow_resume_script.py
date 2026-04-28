@@ -78,8 +78,8 @@ async def handle_reply_advice(update: Update, context: ContextTypes.DEFAULT_TYPE
     thread_id = match.group(1)
     user_input = msg.text
     
-    await resume_workflow(user_desicion=user_input, thread_id=thread_id)
     await msg.reply_text(f"Perfecto, gracias por tu aporte. Estoy procesando tu sugerencia para el thread id <b>{thread_id}</b>.", parse_mode="HTML")
+    await resume_workflow(user_desicion=user_input, thread_id=thread_id)
 
 
 # Example Received callback query: diagnosis_report:diagnosis-service-b-74692c80:approved

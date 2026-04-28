@@ -1,5 +1,8 @@
 # Autonomous Service Diagnostics and Remediation System
 
+> ⚠️ **Attention**: Read this carefully. This README provides a comprehensive overview of the project, its architecture, workflows, and usage instructions. It is essential to understand the system's design and operation before running the code. Don't execute in production environments without proper testing and validation.
+
+
 An AI-powered autonomous agent system that monitors, diagnoses, and remediates service issues using LangGraph workflows with human-in-the-loop (HITL) oversight via Telegram.
 
 ## 🎯 Project Overview
@@ -196,6 +199,7 @@ Below is the complete workflow as visualized in `workflow_graph.png`:
   - If advice rejects action → `dummy_node_b` → END
 
 > Dummy nodes represent workflow debug termination points based on different outcomes. they can be deleted or replaced with actual nodes as needed.
+> The Agent use the default recursion limit value (25)
 ---
 
 ## 📦 Prerequisites
