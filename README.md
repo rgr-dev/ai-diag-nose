@@ -507,12 +507,13 @@ See [LICENSE](LICENSE) file for details.
 
 ## 🔮 Future Enhancements
 
-- [ ] Flow for resume from HITL advice with custom instructions
+- [x] Flow for resume from HITL advice with custom instructions
+- [ ] Add guardrails for agent actions (e.g., tool usage limits)
 - [ ] Automated rollback on failed remediation
+- [ ] Memoization of past diagnoses for faster future resolutions
 - [ ] Web dashboard for workflow monitoring
 - [ ] Metrics and analytics dashboard
 - [ ] Slack integration as alternative to Telegram
-- [ ] Multi-tenant support
 - [ ] Machine learning for pattern recognition
 
 ---
