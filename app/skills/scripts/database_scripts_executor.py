@@ -8,6 +8,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+import re
+
 def database_scripts_executor(query):
     """
     Executes a database query using connection parameters from environment variables.
@@ -23,6 +25,14 @@ def database_scripts_executor(query):
     Returns:
         list: Query results or None if execution fails
     """
+    # Guardrails: Validate the query to prevent destructive actions
+    unsafe_keywords = [r"\bDROP\b", r"\bDELETE\b", r"\bTRUNCATE\b", r"\bALTER\b"]
+    query_upper = query.upper()
+    for keyword_pattern in unsafe_keywords:
+        if re.search(keyword_pattern, query_upper):
+            logger.warning(f"Guardrail blocked query execution. Unsafe keyword detected: {keyword_pattern}")
+            return [{"error": "Action blocked by guardrails: Destructive queries (DROP, DELETE, TRUNCATE, ALTER) are not allowed."}]
+
     try:
         # For PostgreSQL
         conn = psycopg2.connect(

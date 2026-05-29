@@ -5,5 +5,5 @@ langchain-openai
 boto3
 python-telegram-bot
 python-dotenv
-psycopg2
+psycopg2-binary
 langgraph-checkpoint-postgres
